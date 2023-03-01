@@ -11,9 +11,8 @@ import (
 
 // TODO: Make a db connection that can be reuse
 func DBConnection() (*SQL, error) {
-	InitializeEnv()
+	InitializeEnv("../.env")
 	dst := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", os.Getenv("DBUSER"), os.Getenv("DBPASS"), os.Getenv("DBNAME"))
-	fmt.Println(dst)
 	db, err := sqlx.Connect("postgres", dst)
 	if err != nil {
 		log.Fatalln(err)

@@ -7,14 +7,14 @@ import (
 	"github.com/AltheaIX/PembayaranSPP/utils"
 )
 
-func TestCheckLogin(t *testing.T) {
+func TestCheckAuthentication(t *testing.T) {
 	db, err := utils.DBConnection()
 	if err != nil {
 		t.Log(err)
 	}
 
-	payload := &payload{Username: "althea", Password: "althea"}
+	payload := &payload{Username: "althea", Password: "althxea"}
 
-	res := CheckLogin(db, payload)
-	fmt.Println(res.NamaPetugas)
+	petugas, err := CheckAuthentication(db, payload)
+	fmt.Println(petugas, err)
 }

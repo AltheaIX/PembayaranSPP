@@ -1,21 +1,20 @@
 package user
 
 import (
-	"fmt"
-
 	"github.com/AltheaIX/PembayaranSPP/utils"
 	_ "github.com/lib/pq"
 )
 
-// TODO: Make a db connection that can be reuse
-func CheckLogin(SQL *utils.SQL, payload *payload) Petugas {
+// TODO: Make an authentication checker for API
+func CheckAuthentication(SQL *utils.SQL, payload *payload) (Petugas Petugas, err error) {
 	db := SQL.Db
-	Petugas := Petugas{}
-	err := db.Get(&Petugas, "SELECT * FROM petugas WHERE username=$1 AND password=$2", payload.Username, payload.Password)
-	if err != nil {
-		fmt.Println(err.Error())
-		return Petugas
-	}
+	defer db.Close()
 
-	return Petugas
+	err = db.Get(&Petugas, "SELECT * FROM petugas WHERE username=$1 AND password=$2", payload.Username, payload.Password)
+	if err != nil {
+		// Any error goes here
+		return Petugas, err
+	}
+	// Result found
+	return Petugas, err
 }

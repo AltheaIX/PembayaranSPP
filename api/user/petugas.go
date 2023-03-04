@@ -4,7 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func AllPetugas(db *sqlx.DB) ([]Petugas, error) {
+func GetAllPetugas(db *sqlx.DB) ([]Petugas, error) {
 	model := Petugas{}
 	petugas := []Petugas{}
 
@@ -20,7 +20,7 @@ func AllPetugas(db *sqlx.DB) ([]Petugas, error) {
 	return petugas, err
 }
 
-func PetugasById(db *sqlx.DB, id int) (Petugas, error) {
+func GetPetugasById(db *sqlx.DB, id int) (Petugas, error) {
 	model := Petugas{}
 
 	err := db.Get(&model, "SELECT * FROM petugas WHERE id_petugas=$1", id)
@@ -46,4 +46,32 @@ func CreatePetugas(db *sqlx.DB, petugas Petugas) (Petugas, error) {
 
 	err = rows.StructScan(&newPetugas)
 	return newPetugas, err
+}
+
+// TODO: Update Petugas Data
+func UpdatePetugasById(db *sqlx.DB, petugas Petugas) (Petugas, error) {
+	updatePetugas := Petugas{}
+
+	rows, err := db.NamedQuery("UPDATE petugas set username=:username, password=:password, nama_petugas=:nama_petugas, level=:level where id_petugas=:id_petugas RETURNING *", petugas)
+	if err != nil {
+		return updatePetugas, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return updatePetugas, err
+	}
+
+	err = rows.StructScan(&updatePetugas)
+	return updatePetugas, err
+}
+
+// TODO: Delete Petugas Data
+func DeletePetugasById(db *sqlx.DB, id int) error {
+	_, err := db.Exec("DELETE from petugas where id_petugas=$1", id)
+	if err != nil {
+		return err
+	}
+
+	return err
 }

@@ -15,7 +15,7 @@ type Petugas struct {
 }
 
 type ResponseJson struct {
-	Success bool
-	Data    []Petugas
-	Message string
+	Success bool      `json:"success"`
+	Data    []Petugas `json:"data"`
+	Message string    `json:"message"`
 }

@@ -9,23 +9,23 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func TestAllPetugas(t *testing.T) {
+func TestGetAllPetugas(t *testing.T) {
 	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	petugas, err := user.AllPetugas(db)
+	petugas, err := user.GetAllPetugas(db)
 	t.Log(petugas)
 }
 
-func TestPetugasById(t *testing.T) {
+func TestGetPetugasById(t *testing.T) {
 	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	petugas, err := user.PetugasById(db, 15)
+	petugas, err := user.GetPetugasById(db, 15)
 	t.Log(petugas)
 }
 
@@ -48,4 +48,42 @@ func TestCreatePetugas(t *testing.T) {
 	}
 
 	fmt.Println(newPetugas)
+}
+
+func TestUpdatePetugasById(t *testing.T) {
+	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	petugas := user.Petugas{
+		Username:    "uTest",
+		Password:    "uTest",
+		NamaPetugas: "uTest",
+		Level:       "admin",
+	}
+
+	petugas.Id = 18
+	t.Log(petugas)
+
+	updatePetugas, err := user.UpdatePetugasById(db, petugas)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(updatePetugas)
+}
+
+func TestDeletePetugasById(t *testing.T) {
+	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = user.DeletePetugasById(db, 23)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(err)
 }

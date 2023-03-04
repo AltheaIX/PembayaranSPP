@@ -14,7 +14,7 @@ type Env struct {
 	db *sqlx.DB
 }
 
-// TODO: Initialize Fiber and Routing
+// Initialize Fiber and Routing
 func route() {
 	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
 	if err != nil {
@@ -27,15 +27,24 @@ func route() {
 		AppName: "Pembayaran SPP",
 	})
 
+	//GET Method
 	app.Get("/petugas", env.HandlerGetPetugas)
 	app.Get("/petugas/id/:id", env.HandlerGetPetugasById)
+
+	//POST Method
 	app.Post("/petugas", env.HandlerCreatePetugas)
+
+	//PUT Method
+	app.Put("/petugas/id/:id", env.HandlerUpdatePetugas)
+
+	//DELETE Method
+	app.Delete("/petugas/id/:id", env.HandlerDeletePetugas)
 
 	fmt.Println(os.Getenv("PORT"))
 	log.Fatal(app.Listen(":3000"))
 }
 
-// TODO: Initialize
+// Initialize
 func main() {
 
 	route()

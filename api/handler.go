@@ -7,7 +7,7 @@ import (
 )
 
 func (env *Env) HandlerGetPetugas(c *fiber.Ctx) error {
-	listPetugas, err := user.AllPetugas(env.db)
+	listPetugas, err := user.GetAllPetugas(env.db)
 	result := &user.ResponseJson{}
 
 	if err != nil {
@@ -39,7 +39,7 @@ func (env *Env) HandlerGetPetugasById(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(result)
 	}
 
-	petugas, err := user.PetugasById(env.db, id)
+	petugas, err := user.GetPetugasById(env.db, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			result = &user.ResponseJson{
@@ -69,13 +69,13 @@ func (env *Env) HandlerCreatePetugas(c *fiber.Ctx) error {
 	listPetugas := []user.Petugas{}
 	response := &user.ResponseJson{}
 
-	if err := c.BodyParser(&petugas); err != nil {
-		response = &user.ResponseJson{Success: false, Message: err.Error()}
+	if petugas.Username == "" || petugas.Password == "" || petugas.NamaPetugas == "" || petugas.Level == "" {
+		response = &user.ResponseJson{Success: false, Message: "Invalid payload json."}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if petugas.Username == "" || petugas.Password == "" || petugas.NamaPetugas == "" || petugas.Level == "" {
-		response = &user.ResponseJson{Success: false, Message: "Invalid payload json."}
+	if err := c.BodyParser(&petugas); err != nil {
+		response = &user.ResponseJson{Success: false, Message: err.Error()}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
@@ -88,4 +88,84 @@ func (env *Env) HandlerCreatePetugas(c *fiber.Ctx) error {
 	listPetugas = append(listPetugas, newPetugas)
 	response = &user.ResponseJson{Success: true, Data: listPetugas, Message: "Success on creating data."}
 	return c.Status(fiber.StatusBadRequest).JSON(response)
+}
+
+// TODO: Handler update petugas data
+func (env *Env) HandlerUpdatePetugas(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	petugas := user.Petugas{}
+	listPetugas := []user.Petugas{}
+	response := &user.ResponseJson{}
+
+	if err != nil {
+		response = &user.ResponseJson{Success: false, Message: "Error on parsing parameter, please make sure you are inputing ID."}
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	// Validate ID
+	_, err = user.GetPetugasById(env.db, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			response = &user.ResponseJson{Success: false, Message: "Petugas that you are trying to update doesnt exist."}
+			return c.Status(fiber.StatusOK).JSON(response)
+		}
+
+		response = &user.ResponseJson{Success: false, Message: err.Error()}
+		return c.Status(fiber.StatusServiceUnavailable).JSON(response)
+	}
+	petugas.Id = id
+
+	// Parse to Struct
+	if err = c.BodyParser(&petugas); err != nil {
+		response = &user.ResponseJson{Success: false, Message: err.Error()}
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	// Validate Payload by Struct
+	if petugas.Username == "" || petugas.Password == "" || petugas.NamaPetugas == "" || petugas.Level == "" {
+		response = &user.ResponseJson{Success: false, Message: "Invalid payload json."}
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	// Call update function
+	updatedPetugas, err := user.UpdatePetugasById(env.db, petugas)
+	if err != nil {
+		response = &user.ResponseJson{Success: false, Message: err.Error()}
+		return c.Status(fiber.StatusServiceUnavailable).JSON(response)
+	}
+	listPetugas = append(listPetugas, updatedPetugas)
+
+	response = &user.ResponseJson{Success: true, Data: listPetugas, Message: "Success on updating petugas."}
+	return c.Status(fiber.StatusOK).JSON(response)
+}
+
+// TODO: Handler delete petugas data
+func (env *Env) HandlerDeletePetugas(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	response := &user.ResponseJson{}
+
+	if err != nil {
+		response = &user.ResponseJson{Success: false, Message: "Error on parsing parameter, please make sure you are inputing ID."}
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	_, err = user.GetPetugasById(env.db, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			response = &user.ResponseJson{Success: false, Message: "Petugas that you are trying to delete doesnt exist."}
+			return c.Status(fiber.StatusOK).JSON(response)
+		}
+
+		response = &user.ResponseJson{Success: false, Message: err.Error()}
+		return c.Status(fiber.StatusServiceUnavailable).JSON(response)
+	}
+
+	err = user.DeletePetugasById(env.db, id)
+	if err != nil {
+		response = &user.ResponseJson{Success: false, Message: err.Error()}
+		return c.Status(fiber.StatusServiceUnavailable).JSON(response)
+	}
+
+	response = &user.ResponseJson{Success: true, Message: "Success on deleting petugas."}
+	return c.Status(fiber.StatusOK).JSON(response)
 }

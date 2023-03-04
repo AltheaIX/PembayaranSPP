@@ -1,80 +1,49 @@
 package user
 
 import (
-	"database/sql"
-	"fmt"
-
-	"github.com/AltheaIX/PembayaranSPP/utils"
-	_ "github.com/lib/pq"
+	"github.com/jmoiron/sqlx"
 )
 
-// TODO: Create petugas's data
-func CreatePetugas(SQL *utils.SQL, Petugas *Petugas) {
-	db := SQL.Db
+func AllPetugas(db *sqlx.DB) ([]Petugas, error) {
+	model := Petugas{}
+	petugas := []Petugas{}
 
-	// Validate level for Enumerate
-	if Petugas.Level != "admin" && Petugas.Level != "petugas" {
-		fmt.Println("Invalid level.")
-		return
+	rows, err := db.Queryx("SELECT * FROM petugas")
+	for rows.Next() {
+		err = rows.StructScan(&model)
+		if err != nil {
+			return petugas, err
+		}
+
+		petugas = append(petugas, Petugas{Id: model.Id, Username: model.Username, Password: model.Password, NamaPetugas: model.NamaPetugas, Level: model.Level})
 	}
+	return petugas, err
+}
 
-	// Check petugas's existance to avoid duplicate
-	_, err := ReadPetugas(SQL, Petugas.Username)
-	if err != sql.ErrNoRows {
-		fmt.Println("Petugas already exist")
-		return
-	}
+func PetugasById(db *sqlx.DB, id int) (Petugas, error) {
+	model := Petugas{}
 
-	query := "INSERT INTO petugas (username, password, nama_petugas, level) VALUES (:username, :password, :namaPetugas, :level)"
-	_, err = db.NamedExec(query, map[string]interface{}{
-		"username":    Petugas.Username,
-		"password":    Petugas.Password,
-		"namaPetugas": Petugas.NamaPetugas,
-		"level":       Petugas.Level,
-	})
-
+	err := db.Get(&model, "SELECT * FROM petugas WHERE id_petugas=$1", id)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return model, err
 	}
 
-	fmt.Println("Success inserting petugas!")
+	return model, err
 }
 
-// TODO: Remove petugas's data
-func ReadPetugas[V int | string](SQL *utils.SQL, input V) (Petugas Petugas, err error) {
-	db := SQL.Db
+func CreatePetugas(db *sqlx.DB, petugas Petugas) (Petugas, error) {
+	newPetugas := Petugas{}
 
-	dataType := fmt.Sprintf("%T", input)
-	switch dataType {
-	// Search by ID
-	case "int":
-		err = db.Get(&Petugas, "SELECT * FROM petugas WHERE id_petugas=$1", input)
-		if err != nil {
-			// Any error goes here
-			return Petugas, err
-		}
-		// Result found
-		return Petugas, err
+	rows, err := db.NamedQuery("INSERT INTO petugas (username, password, nama_petugas, level) VALUES (:username, :password, :nama_petugas, :level) RETURNING *", petugas)
+	if err != nil {
+		return petugas, err
+	}
+	defer rows.Close()
 
-	// Search by Username
-	case "string":
-		err = db.Get(&Petugas, "SELECT * FROM petugas WHERE username=$1", input)
-		if err != nil {
-			// Any error goes here
-			return Petugas, err
-		}
-		// Result found
-		return Petugas, err
+	if !rows.Next() {
+		return newPetugas, rows.Err()
 	}
 
-	return
-}
-
-// TODO: Update petugas's data
-func UpdatePetugas(SQL *utils.SQL) {
-}
-
-// TODO: Delete petugas's data
-func DeletePetugas(SQL *utils.SQL) {
+	err = rows.StructScan(&newPetugas)
+	return newPetugas, err
 }

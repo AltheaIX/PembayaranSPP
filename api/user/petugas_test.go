@@ -1,37 +1,51 @@
-package user
+package user_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/AltheaIX/PembayaranSPP/utils"
+	"github.com/AltheaIX/PembayaranSPP/user"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
-func TestCreatePetugas(t *testing.T) {
-	db, err := utils.DBConnection()
-	if err != nil {
-		t.Log(err)
-	}
-
-	petugas := &Petugas{
-		Username:    "altheax",
-		Password:    "althea",
-		NamaPetugas: "Malik Zaky Zahroni",
-		Level:       "petugas",
-	}
-
-	CreatePetugas(db, petugas)
-}
-
-func TestReadPetugas(t *testing.T) {
-	db, err := utils.DBConnection()
-	if err != nil {
-		t.Log(err)
-	}
-
-	petugas, err := ReadPetugas(db, 15)
+func TestAllPetugas(t *testing.T) {
+	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(petugas)
+
+	petugas, err := user.AllPetugas(db)
+	t.Log(petugas)
+}
+
+func TestPetugasById(t *testing.T) {
+	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	petugas, err := user.PetugasById(db, 15)
+	t.Log(petugas)
+}
+
+func TestCreatePetugas(t *testing.T) {
+	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	petugas := user.Petugas{
+		Username:    "cTest",
+		Password:    "cTest",
+		NamaPetugas: "cTest",
+		Level:       "admin",
+	}
+
+	newPetugas, err := user.CreatePetugas(db, petugas)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(newPetugas)
 }

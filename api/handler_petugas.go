@@ -90,7 +90,6 @@ func (env *Env) HandlerCreatePetugas(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusBadRequest).JSON(response)
 }
 
-// TODO: Handler update petugas data
 func (env *Env) HandlerUpdatePetugas(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	petugas := user.Petugas{}
@@ -139,7 +138,6 @@ func (env *Env) HandlerUpdatePetugas(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(response)
 }
 
-// TODO: Handler delete petugas data
 func (env *Env) HandlerDeletePetugas(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	response := &user.ResponseJson{}

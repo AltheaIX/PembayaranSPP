@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/AltheaIX/PembayaranSPP/config"
 	"log"
 	"os"
 
@@ -16,7 +17,11 @@ type Env struct {
 
 // Initialize Fiber and Routing
 func route() {
-	db, err := sqlx.Connect("postgres", "user=postgres password=althea dbname=PembayaranSPP sslmode=disable")
+	configModel := &config.Config{}
+	configModel.LoadDatabaseEnv()
+
+	dataSource := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
+	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

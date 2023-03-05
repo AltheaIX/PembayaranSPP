@@ -3,14 +3,12 @@ package user_test
 import (
 	"fmt"
 	"github.com/AltheaIX/PembayaranSPP/config"
-	"testing"
-
 	"github.com/AltheaIX/PembayaranSPP/user"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	"testing"
 )
 
-func TestGetAllPetugas(t *testing.T) {
+func TestGetAllSiswa(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
@@ -20,11 +18,20 @@ func TestGetAllPetugas(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	petugas, err := user.GetAllPetugas(db)
-	t.Log(petugas)
+	siswa, err := user.GetAllSiswa(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(siswa)
+	/*
+		_siswa := user.Siswa{}
+		err = db.Get(&_siswa, "SELECT * FROM siswa WHERE nisn=$1", siswa[0].Nisn)
+		t.Log(_siswa)
+	*/
 }
 
-func TestGetPetugasById(t *testing.T) {
+func TestGetSiswaByNisn(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
@@ -34,11 +41,15 @@ func TestGetPetugasById(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	petugas, err := user.GetPetugasById(db, 15)
-	t.Log(petugas)
+	siswa, err := user.GetSiswaByNisn(db, "1234567890")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(siswa)
 }
 
-func TestCreatePetugas(t *testing.T) {
+func TestCreateSiswa(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
@@ -48,22 +59,17 @@ func TestCreatePetugas(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	petugas := user.Petugas{
-		Username:    "cTest",
-		Password:    "cTest",
-		NamaPetugas: "cTest",
-		Level:       "admin",
-	}
+	siswa := user.Siswa{Nisn: "123456", Nis: "12345678", Nama: "Malik Zaky Zahroni", IdKelas: 1, Alamat: "Japan", NoTelp: "085156974848", IdSpp: 1}
 
-	newPetugas, err := user.CreatePetugas(db, petugas)
+	newSiswa, err := user.CreateSiswa(db, siswa)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	fmt.Println(newPetugas)
+	t.Log(newSiswa)
 }
 
-func TestUpdatePetugasById(t *testing.T) {
+func TestUpdateSiswa(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
@@ -73,25 +79,17 @@ func TestUpdatePetugasById(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	petugas := user.Petugas{
-		Username:    "uTest",
-		Password:    "uTest",
-		NamaPetugas: "uTest",
-		Level:       "admin",
-	}
+	siswa := user.Siswa{Nisn: "1234567890", Nis: "12345678", Nama: "Malik Zaky Zahroni", IdKelas: 1, Alamat: "Tokyo, Japan", NoTelp: "085156974842", IdSpp: 1}
 
-	petugas.Id = 18
-	t.Log(petugas)
-
-	updatePetugas, err := user.UpdatePetugasById(db, petugas)
+	updateSiswa, err := user.UpdateSiswaByNisn(db, siswa)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	fmt.Println(updatePetugas)
+	t.Log(updateSiswa)
 }
 
-func TestDeletePetugasById(t *testing.T) {
+func TestDeleteSiswaByNisn(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
@@ -101,7 +99,7 @@ func TestDeletePetugasById(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = user.DeletePetugasById(db, 23)
+	err = user.DeleteSiswaByNisn(db, "123456")
 	if err != nil {
 		t.Fatal(err)
 	}

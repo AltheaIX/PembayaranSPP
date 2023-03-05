@@ -48,7 +48,6 @@ func CreatePetugas(db *sqlx.DB, petugas Petugas) (Petugas, error) {
 	return newPetugas, err
 }
 
-// TODO: Update Petugas Data
 func UpdatePetugasById(db *sqlx.DB, petugas Petugas) (Petugas, error) {
 	updatePetugas := Petugas{}
 
@@ -66,7 +65,6 @@ func UpdatePetugasById(db *sqlx.DB, petugas Petugas) (Petugas, error) {
 	return updatePetugas, err
 }
 
-// TODO: Delete Petugas Data
 func DeletePetugasById(db *sqlx.DB, id int) error {
 	_, err := db.Exec("DELETE from petugas where id_petugas=$1", id)
 	if err != nil {

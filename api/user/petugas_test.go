@@ -14,7 +14,7 @@ func TestGetAllPetugas(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
-	dataSource := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
+	dataSource := fmt.Sprintf("host=%v user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Host, configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
 	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
 		t.Fatal(err)
@@ -28,7 +28,7 @@ func TestGetPetugasById(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
-	dataSource := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
+	dataSource := fmt.Sprintf("host=%v user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Host, configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
 	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +42,7 @@ func TestCreatePetugas(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
-	dataSource := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
+	dataSource := fmt.Sprintf("host=%v user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Host, configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
 	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +67,7 @@ func TestUpdatePetugasById(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
-	dataSource := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
+	dataSource := fmt.Sprintf("host=%v user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Host, configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
 	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +95,7 @@ func TestDeletePetugasById(t *testing.T) {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
 
-	dataSource := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
+	dataSource := fmt.Sprintf("host=%v user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Host, configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
 	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
 		t.Fatal(err)

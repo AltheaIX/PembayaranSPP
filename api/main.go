@@ -32,6 +32,7 @@ func route() {
 
 	env := &Env{db: db}
 	config.InitializeDatabase(db)
+	db.Exec("SELECT * FROM petugas")
 
 	app := fiber.New(fiber.Config{
 		AppName: "Pembayaran SPP",

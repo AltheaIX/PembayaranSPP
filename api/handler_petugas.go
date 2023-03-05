@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/AltheaIX/PembayaranSPP/user"
 	"github.com/gofiber/fiber/v2"
 )
@@ -69,13 +70,15 @@ func (env *Env) HandlerCreatePetugas(c *fiber.Ctx) error {
 	listPetugas := []user.Petugas{}
 	response := &user.ResponseJson{}
 
-	if petugas.Username == "" || petugas.Password == "" || petugas.NamaPetugas == "" || petugas.Level == "" {
-		response = &user.ResponseJson{Success: false, Message: "Invalid payload json."}
+	if err := c.BodyParser(&petugas); err != nil {
+		response = &user.ResponseJson{Success: false, Message: err.Error()}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if err := c.BodyParser(&petugas); err != nil {
-		response = &user.ResponseJson{Success: false, Message: err.Error()}
+	fmt.Println(petugas)
+
+	if petugas.Username == "" || petugas.Password == "" || petugas.NamaPetugas == "" || petugas.Level == "" {
+		response = &user.ResponseJson{Success: false, Message: "Invalid payload json."}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 

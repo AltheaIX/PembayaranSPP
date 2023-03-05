@@ -15,6 +15,11 @@ type Config struct {
 }
 
 func (config *Config) LoadDatabaseEnv() {
+	/* config.Database.Username = "postgres"
+	config.Database.Password = "althea"
+	config.Database.Name = "PembayaranSPP"
+	config.Database.Host = "localhost" */
+
 	config.Database.Username = os.Getenv("DB_USER")
 	config.Database.Password = os.Getenv("DB_PASS")
 	config.Database.Name = os.Getenv("DB_NAME")
@@ -23,7 +28,6 @@ func (config *Config) LoadDatabaseEnv() {
 
 func InitializeDatabase(db *sqlx.DB) {
 	schema := `
-	create type level as enum ('admin', 'petugas');
 
 	create table if not exists petugas
 	(

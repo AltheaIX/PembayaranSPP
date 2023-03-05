@@ -19,14 +19,19 @@ type Env struct {
 func route() {
 	configModel := &config.Config{}
 	configModel.LoadDatabaseEnv()
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("PORT env is required.")
+	}
 
-	dataSource := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
+	dataSource := fmt.Sprintf("host=%v user=%v password=%v dbname=%v sslmode=disable", configModel.Database.Host, configModel.Database.Username, configModel.Database.Password, configModel.Database.Name)
 	db, err := sqlx.Connect("postgres", dataSource)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	env := &Env{db: db}
+	config.InitializeDatabase(db)
 
 	app := fiber.New(fiber.Config{
 		AppName: "Pembayaran SPP",
@@ -45,12 +50,10 @@ func route() {
 	//DELETE Method
 	app.Delete("/petugas/id/:id", env.HandlerDeletePetugas)
 
-	fmt.Println(os.Getenv("PORT"))
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":" + port))
 }
 
 // Initialize
 func main() {
-
 	route()
 }
